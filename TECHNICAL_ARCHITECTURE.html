@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TicketZero AI - Technical Architecture</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        h1 { color: #007BFF; border-bottom: 3px solid #007BFF; padding-bottom: 10px; }
+        h2 { color: #0056b3; margin-top: 30px; }
+        h3 { color: #444; margin-top: 20px; }
+        .architecture { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .api-block { background: #e3f2fd; padding: 15px; margin: 15px 0; border-left: 4px solid #2196f3; }
+        .integration { background: #fff3e0; padding: 15px; margin: 15px 0; border-left: 4px solid #ff9800; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        pre { background: #263238; color: #aed581; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #007BFF; color: white; }
+        .flow { background: #f0f7ff; padding: 20px; border: 2px solid #007BFF; border-radius: 8px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>TicketZero AI - Technical Architecture</h1>
+
+    <div class="architecture">
+        <h2>Core Integration Components</h2>
+        <p>TicketZero AI leverages enterprise-grade APIs to provide automated IT support resolution through Zoho Desk.</p>
+    </div>
+
+    <h2>1. Microsoft Graph API Integration</h2>
+    <div class="api-block">
+        <h3>Purpose: Azure AD / Microsoft 365 Management</h3>
+        <p>We use Microsoft Graph API for all Active Directory and Office 365 operations:</p>
+        <ul>
+            <li><strong>Password Resets:</strong> <code>POST /users/{id}/authentication/passwordMethods/reset</code></li>
+            <li><strong>Account Unlocks:</strong> <code>PATCH /users/{id}</code> (accountEnabled property)</li>
+            <li><strong>User Management:</strong> <code>GET/PATCH /users</code></li>
+            <li><strong>Group Management:</strong> <code>GET/POST /groups</code></li>
+            <li><strong>License Assignment:</strong> <code>POST /users/{id}/assignLicense</code></li>
+        </ul>
+
+        <h4>Authentication Flow:</h4>
+        <pre>
+// OAuth 2.0 Client Credentials Flow
+POST https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token
+{
+    "client_id": "your-app-id",
+    "client_secret": "your-secret",
+    "scope": "https://graph.microsoft.com/.default",
+    "grant_type": "client_credentials"
+}
+        </pre>
+
+        <h4>Required Permissions:</h4>
+        <table>
+            <tr><th>Permission</th><th>Type</th><th>Purpose</th></tr>
+            <tr><td>User.ReadWrite.All</td><td>Application</td><td>User management</td></tr>
+            <tr><td>UserAuthenticationMethod.ReadWrite.All</td><td>Application</td><td>Password resets</td></tr>
+            <tr><td>Directory.ReadWrite.All</td><td>Application</td><td>Directory operations</td></tr>
+        </table>
+    </div>
+
+    <h2>2. Zoho Assist API Integration</h2>
+    <div class="integration">
+        <h3>Purpose: Remote Machine Access & Local Operations</h3>
+        <p>We integrate with Zoho Assist for remote desktop operations and local machine management:</p>
+
+        <h4>Key Features Used:</h4>
+        <ul>
+            <li><strong>Unattended Access:</strong> Pre-configured access to user machines</li>
+            <li><strong>Remote Command Execution:</strong> Run scripts on remote machines</li>
+            <li><strong>File Transfer:</strong> Deploy software and updates</li>
+            <li><strong>System Information:</strong> Gather diagnostics</li>
+        </ul>
+
+        <h4>API Endpoints:</h4>
+        <pre>
+// Initiate Remote Session
+POST https://assist.zoho.com/api/v2/sessions
+{
+    "session_type": "unattended",
+    "computer_id": "user-machine-id",
+    "technician_id": "bot-technician-id"
+}
+
+// Execute Remote Command
+POST https://assist.zoho.com/api/v2/sessions/{session_id}/execute
+{
+    "command": "Get-Process | Where-Object {$_.WorkingSet -gt 100MB}",
+    "type": "powershell"
+}
+        </pre>
+
+        <h4>Supported Operations:</h4>
+        <table>
+            <tr><th>Operation</th><th>Method</th><th>Example Command</th></tr>
+            <tr><td>Disk Cleanup</td><td>PowerShell</td><td>Clear-RecycleBin -Force</td></tr>
+            <tr><td>Service Restart</td><td>CMD</td><td>net stop spooler && net start spooler</td></tr>
+            <tr><td>Software Install</td><td>MSI</td><td>msiexec /i software.msi /quiet</td></tr>
+            <tr><td>Registry Fix</td><td>REG</td><td>reg add HKLM\Software\... /v Value /d Data</td></tr>
+        </table>
+    </div>
+
+    <h2>3. Zoho Desk Integration</h2>
+    <div class="api-block">
+        <h3>Widget & API Integration</h3>
+
+        <h4>Widget Manifest Configuration:</h4>
+        <pre>
+{
+    "service": "DESK",
+    "modules": {
+        "ticketDetailPage": {
+            "url": "/app/ticket-detail.html",
+            "location": "ticket_details_page.rightpanel"
+        }
+    },
+    "connectors": [
+        {
+            "name": "Microsoft Graph",
+            "connectionLinkName": "msgraph",
+            "serviceName": "msgraph_auth"
+        },
+        {
+            "name": "Zoho Assist",
+            "connectionLinkName": "zohoassist",
+            "serviceName": "zohoassist_auth"
+        }
+    ]
+}
+        </pre>
+
+        <h4>Zoho Desk APIs Used:</h4>
+        <ul>
+            <li><code>GET /api/v1/tickets/{ticket_id}</code> - Retrieve ticket details</li>
+            <li><code>PATCH /api/v1/tickets/{ticket_id}</code> - Update ticket status</li>
+            <li><code>POST /api/v1/tickets/{ticket_id}/comments</code> - Add resolution notes</li>
+            <li><code>GET /api/v1/contacts/{contact_id}</code> - Get user information</li>
+        </ul>
+    </div>
+
+    <h2>4. Complete Resolution Flow</h2>
+    <div class="flow">
+        <h3>Example: Password Reset Request</h3>
+        <ol>
+            <li><strong>Ticket Created in Zoho Desk:</strong> "Cannot login - forgot password"</li>
+            <li><strong>TicketZero AI Widget Activated:</strong> Analyzes ticket content</li>
+            <li><strong>AI Classification:</strong> Identifies as password reset (95% confidence)</li>
+            <li><strong>User Lookup:</strong>
+                <ul>
+                    <li>Query Zoho Desk Contacts API for user email</li>
+                    <li>Match with Azure AD user via Microsoft Graph</li>
+                </ul>
+            </li>
+            <li><strong>Microsoft Graph API Call:</strong>
+                <pre>
+POST https://graph.microsoft.com/v1.0/users/{user-id}/authentication/methods/password/resetPassword
+{
+    "newPassword": "TemporaryP@ssw0rd123!",
+    "requireChangeOnNextLogin": true
+}
+                </pre>
+            </li>
+            <li><strong>Update Zoho Desk Ticket:</strong>
+                <ul>
+                    <li>Status: Resolved</li>
+                    <li>Add comment with temporary password</li>
+                    <li>Send email notification to user</li>
+                </ul>
+            </li>
+            <li><strong>Audit Trail:</strong> Log all actions in both systems</li>
+        </ol>
+    </div>
+
+    <h2>5. Security & Compliance</h2>
+    <div class="architecture">
+        <h3>Security Measures</h3>
+        <ul>
+            <li><strong>OAuth 2.0:</strong> Secure authentication for all API connections</li>
+            <li><strong>Encrypted Storage:</strong> Credentials stored in Zoho Vault</li>
+            <li><strong>Audit Logging:</strong> All actions logged with timestamp and user</li>
+            <li><strong>Role-Based Access:</strong> Respects Zoho Desk user permissions</li>
+            <li><strong>MFA Support:</strong> Integrates with organizational MFA policies</li>
+        </ul>
+
+        <h3>Compliance</h3>
+        <ul>
+            <li><strong>GDPR:</strong> No data stored outside of existing systems</li>
+            <li><strong>SOC 2:</strong> Follows security best practices</li>
+            <li><strong>ISO 27001:</strong> Information security management</li>
+        </ul>
+    </div>
+
+    <h2>6. Scalability & Performance</h2>
+    <table>
+        <tr><th>Metric</th><th>Specification</th></tr>
+        <tr><td>API Rate Limits</td><td>Respects Microsoft Graph (2000/min) and Zoho limits</td></tr>
+        <tr><td>Concurrent Operations</td><td>Up to 50 simultaneous resolutions</td></tr>
+        <tr><td>Response Time</td><td>&lt; 3 seconds for classification</td></tr>
+        <tr><td>Resolution Time</td><td>30-180 seconds depending on operation</td></tr>
+        <tr><td>Availability</td><td>99.9% uptime SLA</td></tr>
+    </table>
+
+    <h2>7. Configuration Requirements</h2>
+    <div class="api-block">
+        <h3>Microsoft Azure Setup:</h3>
+        <ol>
+            <li>Register application in Azure AD</li>
+            <li>Grant required Graph API permissions</li>
+            <li>Generate client secret</li>
+            <li>Configure tenant ID</li>
+        </ol>
+
+        <h3>Zoho Assist Setup:</h3>
+        <ol>
+            <li>Enable API access in Zoho Assist</li>
+            <li>Deploy unattended access agent to user machines</li>
+            <li>Configure technician account for automation</li>
+            <li>Set up session recording policies</li>
+        </ol>
+
+        <h3>Zoho Desk Configuration:</h3>
+        <ol>
+            <li>Install TicketZero AI widget</li>
+            <li>Configure OAuth connections</li>
+            <li>Set automation rules and triggers</li>
+            <li>Define escalation policies</li>
+        </ol>
+    </div>
+
+    <div class="architecture">
+        <h3>Summary</h3>
+        <p>TicketZero AI provides enterprise-grade IT automation by combining:</p>
+        <ul>
+            <li>✓ Microsoft Graph API for Azure AD/M365 operations</li>
+            <li>✓ Zoho Assist API for remote machine management</li>
+            <li>✓ Zoho Desk for ticket workflow automation</li>
+            <li>✓ AI classification for intelligent routing</li>
+            <li>✓ Secure, compliant, and scalable architecture</li>
+        </ul>
+    </div>
+</body>
+</html>

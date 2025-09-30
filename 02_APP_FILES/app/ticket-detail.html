@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TicketZero AI</title>
+    <script>
+        // Check if setup is complete
+        function checkSetupStatus() {
+            const config = localStorage.getItem('ticketzero_config');
+            if (!config || !JSON.parse(config).setupComplete) {
+                // Show setup wizard
+                showSetupWizard();
+                return false;
+            }
+            return true;
+        }
+        
+        function showSetupWizard() {
+            const wizardHtml = `
+                <div id="setupWizardOverlay" style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.8);
+                    z-index: 10000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <div style="
+                        background: white;
+                        border-radius: 12px;
+                        padding: 32px;
+                        max-width: 500px;
+                        text-align: center;
+                        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                    ">
+                        <h2 style="color: #667eea; margin-bottom: 16px;">🚀 Welcome to TicketZero AI!</h2>
+                        <p style="color: #6b7280; margin-bottom: 24px;">
+                            Let's get your AI ticket resolution system set up in just 3 minutes!
+                        </p>
+                        <button onclick="startSetup()" style="
+                            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            border: none;
+                            padding: 12px 24px;
+                            border-radius: 8px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            margin-right: 12px;
+                        ">Start Setup Wizard</button>
+                        <button onclick="skipSetup()" style="
+                            background: #f3f4f6;
+                            color: #374151;
+                            border: none;
+                            padding: 12px 24px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                        ">Skip for Now</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', wizardHtml);
+        }
+        
+        function startSetup() {
+            // Open setup wizard in new window/iframe
+            const wizardWindow = window.open('setup-wizard.html', 'TicketZero Setup', 'width=700,height=600,resizable=yes');
+            
+            // Listen for setup completion
+            window.addEventListener('message', function(event) {
+                if (event.data.action === 'setup_complete') {
+                    wizardWindow.close();
+                    document.getElementById('setupWizardOverlay').remove();
+                    location.reload(); // Refresh to show main interface
+                }
+            });
+            
+            document.getElementById('setupWizardOverlay').remove();
+        }
+        
+        function skipSetup() {
+            document.getElementById('setupWizardOverlay').remove();
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 16px;
+            background: #f8f9fa;
+        }
+        .container {
+            max-width: 400px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .status-card {
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            border-left: 4px solid;
+        }
+        .status-analyzing {
+            background: #fef9e7;
+            border-color: #f6ad55;
+            color: #744210;
+        }
+        .status-ready {
+            background: #f0fff4;
+            border-color: #48bb78;
+            color: #22543d;
+        }
+        .status-escalated {
+            background: #fed7d7;
+            border-color: #f56565;
+            color: #742a2a;
+        }
+        .btn {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin: 8px 0;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn:disabled {
+            background: #e2e8f0;
+            color: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .analysis-result {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+        .metric-label {
+            color: #4a5568;
+            font-size: 14px;
+        }
+        .metric-value {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .confidence-high {
+            color: #38a169;
+        }
+        .confidence-medium {
+            color: #ed8936;
+        }
+        .confidence-low {
+            color: #e53e3e;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🤖</div>
+            <div class="title">TicketZero AI</div>
+        </div>
+
+        <div id="status" class="status-card status-ready">
+            <strong>AI Analysis Ready</strong><br>
+            Click below to analyze this ticket with local LLM intelligence
+        </div>
+
+        <button id="analyzeBtn" class="btn" onclick="analyzeTicket()">
+            🧠 Analyze Ticket with AI
+        </button>
+
+        <button id="executeBtn" class="btn" onclick="executeResolution()" style="display:none;" disabled>
+            ⚡ Execute Automated Fix
+        </button>
+
+        <div id="analysis" class="analysis-result" style="display:none;">
+            <h4>🔍 AI Analysis Results</h4>
+            <div class="metric">
+                <span class="metric-label">Issue Type:</span>
+                <span id="issueType" class="metric-value">-</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Confidence:</span>
+                <span id="confidence" class="metric-value">-</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Time to Resolve:</span>
+                <span id="timeToResolve" class="metric-value">-</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Estimated Savings:</span>
+                <span id="estimatedSavings" class="metric-value">-</span>
+            </div>
+            <div style="margin-top: 12px;">
+                <div class="metric-label">Proposed Solution:</div>
+                <div id="solution" style="font-size: 12px; color: #4a5568; margin-top: 4px; background: #edf2f7; padding: 8px; border-radius: 4px;"></div>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; text-align: center; font-size: 12px; color: #718096;">
+            Powered by Local LLM • Privacy-First AI
+        </div>
+    </div>
+
+    <script>
+        let currentTicket = null;
+        let analysisResult = null;
+
+        // Initialize when Zoho context is ready
+        window.onload = function() {
+            // Check setup status first
+            if (!checkSetupStatus()) {
+                return; // Setup wizard will handle initialization
+            }
+            
+            // Load support chat widget
+            loadSupportWidget();
+            
+            ZOHODESK.extension.onload().then(function(app) {
+                // Get current ticket data
+                app.get("ticket").then(function(data) {
+                    currentTicket = data.ticket;
+                    console.log("Ticket loaded:", currentTicket);
+                });
+            });
+        };
+        
+        function loadSupportWidget() {
+            // Inject support chat widget
+            const script = document.createElement('script');
+            script.src = '../support/chat_widget.html';
+            script.onload = function() {
+                console.log('Support chat widget loaded');
+            };
+            
+            // Alternatively, load the widget content directly
+            fetch('../support/chat_widget.html')
+                .then(response => response.text())
+                .then(html => {
+                    // Extract just the chat widget part
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const chatWidget = doc.querySelector('.support-chat');
+                    if (chatWidget) {
+                        document.body.appendChild(chatWidget);
+                    }
+                })
+                .catch(error => {
+                    console.log('Support widget not available:', error);
+                });
+        }
+
+        async function analyzeTicket() {
+            if (!currentTicket) {
+                alert("Please wait for ticket to load...");
+                return;
+            }
+
+            // Update UI to analyzing state
+            document.getElementById('status').className = 'status-card status-analyzing';
+            document.getElementById('status').innerHTML = '<div class="loading"></div> <strong>Analyzing with AI...</strong><br>Local LLM is processing the ticket...';
+            
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<div class="loading"></div> Analyzing...';
+
+            try {
+                // Call our AI analysis endpoint
+                const response = await fetch('/api/analyze-ticket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ticket: {
+                            id: currentTicket.id,
+                            subject: currentTicket.subject,
+                            description: currentTicket.description,
+                            priority: currentTicket.priority,
+                            contact: currentTicket.contact
+                        }
+                    })
+                });
+
+                analysisResult = await response.json();
+                
+                if (analysisResult.success) {
+                    displayAnalysisResults(analysisResult.data);
+                } else {
+                    throw new Error(analysisResult.error || 'Analysis failed');
+                }
+
+            } catch (error) {
+                console.error('Analysis failed:', error);
+                document.getElementById('status').className = 'status-card status-escalated';
+                document.getElementById('status').innerHTML = '<strong>Analysis Failed</strong><br>Unable to connect to AI engine. Please try again.';
+                
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = '🧠 Analyze Ticket with AI';
+            }
+        }
+
+        function displayAnalysisResults(analysis) {
+            // Update status
+            const confidence = analysis.confidence;
+            if (confidence >= 80) {
+                document.getElementById('status').className = 'status-card status-ready';
+                document.getElementById('status').innerHTML = '<strong>High Confidence Resolution Available</strong><br>AI has identified a reliable fix for this ticket';
+            } else if (confidence >= 60) {
+                document.getElementById('status').className = 'status-card status-analyzing';
+                document.getElementById('status').innerHTML = '<strong>Medium Confidence Solution</strong><br>AI suggests a possible fix but recommends review';
+            } else {
+                document.getElementById('status').className = 'status-card status-escalated';
+                document.getElementById('status').innerHTML = '<strong>Requires Human Review</strong><br>AI confidence too low for automated resolution';
+            }
+
+            // Show analysis results
+            document.getElementById('issueType').textContent = analysis.issue_type.replace('_', ' ').toUpperCase();
+            
+            const confidenceElement = document.getElementById('confidence');
+            confidenceElement.textContent = confidence + '%';
+            confidenceElement.className = 'metric-value ' + 
+                (confidence >= 80 ? 'confidence-high' : 
+                 confidence >= 60 ? 'confidence-medium' : 'confidence-low');
+
+            document.getElementById('timeToResolve').textContent = analysis.time_to_resolve + ' minutes';
+            document.getElementById('estimatedSavings').textContent = '$' + (analysis.time_to_resolve * 1.5).toFixed(2);
+            document.getElementById('solution').textContent = analysis.solution_commands.join('; ');
+
+            // Show analysis panel
+            document.getElementById('analysis').style.display = 'block';
+
+            // Enable/disable execute button based on confidence
+            const executeBtn = document.getElementById('executeBtn');
+            executeBtn.style.display = 'block';
+            
+            if (confidence >= 70 && !analysis.requires_human) {
+                executeBtn.disabled = false;
+                executeBtn.innerHTML = '⚡ Execute Automated Fix';
+            } else {
+                executeBtn.disabled = true;
+                executeBtn.innerHTML = '⚠️ Requires Manual Review';
+            }
+
+            // Reset analyze button
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = '🔄 Re-analyze Ticket';
+        }
+
+        async function executeResolution() {
+            if (!analysisResult || !currentTicket) {
+                alert("No analysis available");
+                return;
+            }
+
+            const executeBtn = document.getElementById('executeBtn');
+            executeBtn.disabled = true;
+            executeBtn.innerHTML = '<div class="loading"></div> Executing Fix...';
+
+            try {
+                const response = await fetch('/api/execute-resolution', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ticket_id: currentTicket.id,
+                        analysis: analysisResult.data
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update ticket status in Zoho
+                    ZOHODESK.extension.onload().then(function(app) {
+                        app.set("ticket.status", "Resolved");
+                        app.set("ticket.resolution", result.resolution_note);
+                    });
+
+                    document.getElementById('status').className = 'status-card status-ready';
+                    document.getElementById('status').innerHTML = '<strong>✅ Ticket Resolved Automatically</strong><br>Commands executed successfully. Resolution time: ' + result.execution_time + 's';
+                    
+                    executeBtn.innerHTML = '✅ Resolution Complete';
+                } else {
+                    throw new Error(result.error || 'Execution failed');
+                }
+
+            } catch (error) {
+                console.error('Execution failed:', error);
+                document.getElementById('status').className = 'status-card status-escalated';
+                document.getElementById('status').innerHTML = '<strong>Execution Failed</strong><br>Unable to execute automated fix. Manual intervention required.';
+                
+                executeBtn.disabled = false;
+                executeBtn.innerHTML = '🔄 Retry Execution';
+            }
+        }
+    </script>
+</body>
+</html>

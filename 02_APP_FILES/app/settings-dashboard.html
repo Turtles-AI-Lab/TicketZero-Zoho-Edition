@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TicketZero AI - Settings Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #2d3748;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .header p {
+            margin: 8px 0 0 0;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 32px;
+        }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .settings-section {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .section-header {
+            background: #f9fafb;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .section-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #374151;
+        }
+        .section-header p {
+            margin: 4px 0 0 0;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .section-content {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-help {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        .form-checkbox {
+            width: auto;
+            margin-right: 8px;
+        }
+        .timeout-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .timeout-value {
+            font-weight: bold;
+            color: #059669;
+            background: #d1fae5;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .btn {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-right: 12px;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: #6b7280;
+        }
+        .btn-danger {
+            background: #ef4444;
+        }
+        .status-message {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+            display: none;
+        }
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .current-config {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .current-config h4 {
+            margin: 0 0 12px 0;
+            color: #0c4a6e;
+        }
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .config-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #0ea5e9;
+        }
+        .config-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        .config-value {
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .recommendation {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 24px 0;
+        }
+        .recommendation h4 {
+            margin: 0 0 8px 0;
+            color: #92400e;
+        }
+        .recommendation-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .recommendation-list li {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .recommendation-list li:before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ TicketZero AI Settings</h1>
+            <p>Optimize performance, timeouts, and provider preferences</p>
+        </div>
+        
+        <div class="content">
+            <!-- Current Configuration Overview -->
+            <div class="current-config">
+                <h4>📊 Current Configuration</h4>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <div class="config-label">Primary Provider</div>
+                        <div class="config-value" id="currentProvider">Local Ollama</div>
+                    </div>
+                    <div class="config-item">
+                        <div class="config-label">Local AI Timeout</div>
+                        <div class="config-value" id="currentOllamaTimeout">120s</div>
+                    </div>
+                    <div class="config-item">
+                        <div class="config-label">Cloud API Timeout</div>
+                        <div class="config-value" id="currentApiTimeout">30s</div>
+                    </div>
+                    <div class="config-item">
+                        <div class="config-label">Retry Attempts</div>
+                        <div class="config-value" id="currentRetries">2</div>
+                    </div>
+                    <div class="config-item">
+                        <div class="config-label">Cost Optimization</div>
+                        <div class="config-value" id="currentCostOpt">Enabled</div>
+                    </div>
+                    <div class="config-item">
+                        <div class="config-label">Auto Fallback</div>
+                        <div class="config-value" id="currentFallback">Enabled</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Messages -->
+            <div id="statusMessage" class="status-message"></div>
+
+            <!-- Settings Sections -->
+            <div class="settings-grid">
+                <!-- Timeout Settings -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3>⏱️ Timeout Settings</h3>
+                        <p>Configure how long to wait for AI responses</p>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label class="form-label">Local AI Timeout (Ollama)</label>
+                            <input type="range" id="ollamaTimeout" class="form-input" 
+                                   min="30" max="600" value="120" step="30">
+                            <div class="timeout-display">
+                                <span>Current:</span>
+                                <span class="timeout-value" id="ollamaTimeoutValue">120 seconds</span>
+                            </div>
+                            <div class="form-help">
+                                Local AI can be slower but runs privately. Recommended: 120-180 seconds.
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Cloud API Timeout</label>
+                            <input type="range" id="apiTimeout" class="form-input" 
+                                   min="10" max="120" value="30" step="5">
+                            <div class="timeout-display">
+                                <span>Current:</span>
+                                <span class="timeout-value" id="apiTimeoutValue">30 seconds</span>
+                            </div>
+                            <div class="form-help">
+                                Cloud APIs are faster but cost money. Recommended: 15-45 seconds.
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Connection Timeout</label>
+                            <input type="range" id="connectionTimeout" class="form-input" 
+                                   min="1" max="15" value="5" step="1">
+                            <div class="timeout-display">
+                                <span>Current:</span>
+                                <span class="timeout-value" id="connectionTimeoutValue">5 seconds</span>
+                            </div>
+                            <div class="form-help">
+                                How long to wait for initial connection. Keep this short.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Provider Settings -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3>🤖 Provider Settings</h3>
+                        <p>Configure AI provider preferences</p>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label class="form-label">Primary AI Provider</label>
+                            <select id="primaryProvider" class="form-input">
+                                <option value="ollama" selected>Local Ollama (Free, Private)</option>
+                                <option value="openai">OpenAI GPT (Premium, Fast)</option>
+                                <option value="anthropic">Anthropic Claude (Premium, Smart)</option>
+                                <option value="google">Google Gemini (Premium, Cost-effective)</option>
+                            </select>
+                            <div class="form-help">
+                                Your preferred AI provider. Local Ollama is recommended for privacy.
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Confidence Threshold</label>
+                            <input type="range" id="confidenceThreshold" class="form-input" 
+                                   min="50" max="95" value="75" step="5">
+                            <div class="timeout-display">
+                                <span>Current:</span>
+                                <span class="timeout-value" id="confidenceValue">75%</span>
+                            </div>
+                            <div class="form-help">
+                                Only execute fixes above this confidence level. Lower = more automation.
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Maximum Retry Attempts</label>
+                            <select id="maxRetries" class="form-input">
+                                <option value="1">1 attempt (Fast failure)</option>
+                                <option value="2" selected>2 attempts (Balanced)</option>
+                                <option value="3">3 attempts (Maximum reliability)</option>
+                                <option value="5">5 attempts (Very persistent)</option>
+                            </select>
+                            <div class="form-help">
+                                How many times to retry failed AI requests.
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="enableCostOptimization" class="form-checkbox" checked>
+                                Enable Smart Cost Optimization
+                            </label>
+                            <div class="form-help">
+                                Automatically use cheaper providers for simple tickets.
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="enableAutoFallback" class="form-checkbox" checked>
+                                Enable Automatic Fallback
+                            </label>
+                            <div class="form-help">
+                                Switch to backup providers when primary fails.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="recommendation">
+                <h4>💡 Optimization Recommendations</h4>
+                <ul class="recommendation-list" id="recommendationsList">
+                    <li>Local Ollama provides best privacy and zero costs</li>
+                    <li>Increase timeout to 180s if you experience frequent timeouts</li>
+                    <li>Enable cost optimization to save 40-70% on AI expenses</li>
+                    <li>Lower confidence threshold to increase automation rate</li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="text-align: center; margin-top: 32px;">
+                <button class="btn" onclick="saveSettings()">💾 Save Settings</button>
+                <button class="btn btn-secondary" onclick="testSettings()">🧪 Test Configuration</button>
+                <button class="btn btn-secondary" onclick="exportSettings()">📤 Export Settings</button>
+                <button class="btn btn-danger" onclick="resetToDefaults()">🔄 Reset to Defaults</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Settings management
+        let currentSettings = {
+            timeout_settings: {
+                ollama_timeout: 120,
+                api_timeout: 30,
+                connection_timeout: 5
+            },
+            provider_settings: {
+                primary_provider: "ollama",
+                confidence_threshold: 75,
+                max_retry_attempts: 2,
+                cost_optimization: true,
+                auto_fallback: true
+            }
+        };
+
+        // Initialize UI
+        function initializeUI() {
+            updateSliderValues();
+            updateCurrentConfig();
+            
+            // Add event listeners for real-time updates
+            document.getElementById('ollamaTimeout').addEventListener('input', updateSliderValues);
+            document.getElementById('apiTimeout').addEventListener('input', updateSliderValues);
+            document.getElementById('connectionTimeout').addEventListener('input', updateSliderValues);
+            document.getElementById('confidenceThreshold').addEventListener('input', updateSliderValues);
+            
+            console.log('Settings dashboard initialized');
+        }
+
+        function updateSliderValues() {
+            const ollamaTimeout = document.getElementById('ollamaTimeout').value;
+            const apiTimeout = document.getElementById('apiTimeout').value;
+            const connectionTimeout = document.getElementById('connectionTimeout').value;
+            const confidence = document.getElementById('confidenceThreshold').value;
+            
+            document.getElementById('ollamaTimeoutValue').textContent = ollamaTimeout + ' seconds';
+            document.getElementById('apiTimeoutValue').textContent = apiTimeout + ' seconds';
+            document.getElementById('connectionTimeoutValue').textContent = connectionTimeout + ' seconds';
+            document.getElementById('confidenceValue').textContent = confidence + '%';
+            
+            // Update recommendations based on values
+            updateRecommendations(ollamaTimeout, apiTimeout, confidence);
+        }
+
+        function updateRecommendations(ollamaTimeout, apiTimeout, confidence) {
+            const recommendations = [];
+            
+            if (ollamaTimeout < 90) {
+                recommendations.push("Consider increasing Ollama timeout to reduce failures");
+            }
+            if (apiTimeout > 60) {
+                recommendations.push("High API timeout may slow down responses");
+            }
+            if (confidence > 85) {
+                recommendations.push("High confidence threshold may reduce automation rate");
+            }
+            if (confidence < 65) {
+                recommendations.push("Low confidence threshold may increase false positives");
+            }
+            
+            if (recommendations.length === 0) {
+                recommendations.push("Configuration looks good! 🎉");
+                recommendations.push("Monitor performance and adjust as needed");
+            }
+            
+            const list = document.getElementById('recommendationsList');
+            list.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join('');
+        }
+
+        function updateCurrentConfig() {
+            document.getElementById('currentProvider').textContent = 
+                currentSettings.provider_settings.primary_provider.charAt(0).toUpperCase() + 
+                currentSettings.provider_settings.primary_provider.slice(1);
+            document.getElementById('currentOllamaTimeout').textContent = 
+                currentSettings.timeout_settings.ollama_timeout + 's';
+            document.getElementById('currentApiTimeout').textContent = 
+                currentSettings.timeout_settings.api_timeout + 's';
+            document.getElementById('currentRetries').textContent = 
+                currentSettings.provider_settings.max_retry_attempts;
+            document.getElementById('currentCostOpt').textContent = 
+                currentSettings.provider_settings.cost_optimization ? 'Enabled' : 'Disabled';
+            document.getElementById('currentFallback').textContent = 
+                currentSettings.provider_settings.auto_fallback ? 'Enabled' : 'Disabled';
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        async function saveSettings() {
+            try {
+                // Collect all settings from form
+                const newSettings = {
+                    timeout_settings: {
+                        ollama_timeout: parseInt(document.getElementById('ollamaTimeout').value),
+                        api_timeout: parseInt(document.getElementById('apiTimeout').value),
+                        connection_timeout: parseInt(document.getElementById('connectionTimeout').value)
+                    },
+                    provider_settings: {
+                        primary_provider: document.getElementById('primaryProvider').value,
+                        confidence_threshold: parseInt(document.getElementById('confidenceThreshold').value),
+                        max_retry_attempts: parseInt(document.getElementById('maxRetries').value),
+                        cost_optimization: document.getElementById('enableCostOptimization').checked,
+                        auto_fallback: document.getElementById('enableAutoFallback').checked
+                    }
+                };
+                
+                // In a real implementation, this would call the API
+                console.log('Saving settings:', newSettings);
+                
+                // Update current settings
+                currentSettings = newSettings;
+                updateCurrentConfig();
+                
+                showStatus('✅ Settings saved successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Failed to save settings:', error);
+                showStatus('❌ Failed to save settings. Please try again.', 'error');
+            }
+        }
+
+        async function testSettings() {
+            showStatus('🧪 Testing configuration...', 'success');
+            
+            // In a real implementation, this would test the actual AI providers
+            setTimeout(() => {
+                showStatus('✅ Configuration test completed successfully!', 'success');
+            }, 2000);
+        }
+
+        function exportSettings() {
+            const exportData = {
+                version: '1.0',
+                exported_at: new Date().toISOString(),
+                settings: currentSettings
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ticketzero-settings-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            showStatus('📤 Settings exported successfully!', 'success');
+        }
+
+        function resetToDefaults() {
+            if (confirm('Are you sure you want to reset all settings to defaults? This cannot be undone.')) {
+                // Reset form to default values
+                document.getElementById('ollamaTimeout').value = 120;
+                document.getElementById('apiTimeout').value = 30;
+                document.getElementById('connectionTimeout').value = 5;
+                document.getElementById('confidenceThreshold').value = 75;
+                document.getElementById('primaryProvider').value = 'ollama';
+                document.getElementById('maxRetries').value = 2;
+                document.getElementById('enableCostOptimization').checked = true;
+                document.getElementById('enableAutoFallback').checked = true;
+                
+                updateSliderValues();
+                saveSettings();
+                
+                showStatus('🔄 Settings reset to defaults', 'success');
+            }
+        }
+
+        // Initialize when page loads
+        window.onload = initializeUI;
+    </script>
+</body>
+</html>

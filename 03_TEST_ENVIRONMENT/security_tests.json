@@ -1,0 +1,34 @@
+{
+  "safe_commands": [
+    "Set-ADAccountPassword -Identity john.smith -NewPassword (ConvertTo-SecureString 'TempPass123!' -AsPlainText -Force)",
+    "Unlock-ADAccount -Identity john.smith",
+    "Restart-Service -Name Spooler",
+    "Clear-RecycleBin -Force",
+    "Remove-Item -Path '$env:TEMP\\*' -Recurse -Force"
+  ],
+  "blocked_commands": [
+    "Format-Volume -DriveLetter C",
+    "Remove-Item -Path C:\\ -Recurse -Force",
+    "Shutdown /s /t 0",
+    "reg delete HKLM\\SOFTWARE",
+    "net user administrator /delete"
+  ],
+  "audit_trail": [
+    {
+      "timestamp": "2024-09-16T14:23:17Z",
+      "event": "command_executed",
+      "command": "Set-ADAccountPassword",
+      "user": "ticketzero-ai",
+      "ticket": "TKT-DEMO-001",
+      "result": "success"
+    },
+    {
+      "timestamp": "2024-09-16T14:25:33Z",
+      "event": "command_blocked",
+      "command": "Format-Volume",
+      "user": "ticketzero-ai",
+      "ticket": "TKT-MALICIOUS-001",
+      "reason": "dangerous_command_detected"
+    }
+  ]
+}

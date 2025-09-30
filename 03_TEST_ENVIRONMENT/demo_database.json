@@ -1,0 +1,434 @@
+{
+  "tickets": [
+    {
+      "id": "TKT-DEMO-001",
+      "subject": "Can't login - password not working",
+      "description": "Hi, I tried logging into my computer this morning but my password isn't working. I think I may have changed it yesterday and forgot what I changed it to. Can someone please reset it? My username is john.smith. Thanks!",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "John Smith",
+        "email": "john.smith@company.com",
+        "department": "Marketing"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 95,
+        "resolution_time": 45,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-002",
+      "subject": "C: drive full - can't save files",
+      "description": "My C: drive is completely full and I can't save any documents. Keep getting error messages saying 'insufficient disk space'. This is really urgent as I have a presentation due today. Please help clear some space.",
+      "priority": "High",
+      "status": "Open",
+      "contact": {
+        "name": "Sarah Johnson",
+        "email": "sarah.johnson@company.com",
+        "department": "Sales"
+      },
+      "expected_resolution": {
+        "type": "disk_cleanup",
+        "confidence": 92,
+        "resolution_time": 78,
+        "cost_saving": 30.0
+      }
+    },
+    {
+      "id": "TKT-DEMO-003",
+      "subject": "Printer not working - jobs stuck in queue",
+      "description": "The office printer isn't working. I sent something to print over an hour ago and it's still not printing. When I check the print queue there are like 12 jobs stuck. Can someone fix this please?",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Mike Chen",
+        "email": "mike.chen@company.com",
+        "department": "Operations"
+      },
+      "expected_resolution": {
+        "type": "service_restart",
+        "confidence": 88,
+        "resolution_time": 32,
+        "cost_saving": 15.0
+      }
+    },
+    {
+      "id": "TKT-DEMO-004",
+      "subject": "Server crashed - need data recovery",
+      "description": "Our main file server crashed this morning and we can't access any shared files. The server won't boot up and there's a blue screen error. We need to recover critical data ASAP. This is affecting our entire team.",
+      "priority": "Critical",
+      "status": "Open",
+      "contact": {
+        "name": "Lisa Rodriguez",
+        "email": "lisa.rodriguez@company.com",
+        "department": "IT"
+      },
+      "expected_resolution": {
+        "type": "escalation_required",
+        "confidence": 45,
+        "resolution_time": null,
+        "cost_saving": 0,
+        "note": "Low confidence - requires human expertise"
+      }
+    },
+    {
+      "id": "TKT-DEMO-005",
+      "subject": "Need Adobe Reader installed",
+      "description": "Hi, I need Adobe Reader installed on my computer to view PDF documents. I tried downloading it myself but I don't have admin rights. Can someone please install it for me?",
+      "priority": "Low",
+      "status": "Open",
+      "contact": {
+        "name": "David Wilson",
+        "email": "david.wilson@company.com",
+        "department": "Finance"
+      },
+      "expected_resolution": {
+        "type": "software_installation",
+        "confidence": 78,
+        "resolution_time": 210,
+        "cost_saving": 45.0
+      }
+    },
+    {
+      "id": "TKT-DEMO-006",
+      "subject": "Windows Updates failing with error",
+      "description": "My computer keeps trying to install Windows Updates but they fail every time. Getting error code 0x80070002. Updates have been failing for over a week now. Can you help fix this?",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Jennifer Davis",
+        "email": "jennifer.davis@company.com",
+        "department": "HR"
+      },
+      "expected_resolution": {
+        "type": "windows_update_fix",
+        "confidence": 91,
+        "resolution_time": 126,
+        "cost_saving": 37.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-007",
+      "subject": "Can't access shared network drives",
+      "description": "I can browse the internet fine but I can't access any of our shared network drives. Getting 'network path not found' errors when trying to connect. Need access to work on project files.",
+      "priority": "High",
+      "status": "Open",
+      "contact": {
+        "name": "Robert Taylor",
+        "email": "robert.taylor@company.com",
+        "department": "Engineering"
+      },
+      "expected_resolution": {
+        "type": "network_connectivity",
+        "confidence": 87,
+        "resolution_time": 56,
+        "cost_saving": 30.0
+      }
+    },
+    {
+      "id": "TKT-DEMO-008",
+      "subject": "Outlook keeps crashing on startup",
+      "description": "Microsoft Outlook crashes every time I try to open it. Gets to the loading screen then just closes with an error about corrupted profile data. I need email access urgently.",
+      "priority": "High",
+      "status": "Open",
+      "contact": {
+        "name": "Amy Brown",
+        "email": "amy.brown@company.com",
+        "department": "Customer Service"
+      },
+      "expected_resolution": {
+        "type": "application_repair",
+        "confidence": 85,
+        "resolution_time": 252,
+        "cost_saving": 52.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-009",
+      "subject": "Password reset request #1",
+      "description": "User account locked out, need password reset for user9@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 9",
+        "email": "user9@company.com",
+        "department": "Marketing"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 94,
+        "resolution_time": 57,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-010",
+      "subject": "Password reset request #2",
+      "description": "User account locked out, need password reset for user10@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 10",
+        "email": "user10@company.com",
+        "department": "Sales"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 91,
+        "resolution_time": 58,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-011",
+      "subject": "Password reset request #3",
+      "description": "User account locked out, need password reset for user11@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 11",
+        "email": "user11@company.com",
+        "department": "Finance"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 92,
+        "resolution_time": 31,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-012",
+      "subject": "Password reset request #4",
+      "description": "User account locked out, need password reset for user12@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 12",
+        "email": "user12@company.com",
+        "department": "Sales"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 90,
+        "resolution_time": 42,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-013",
+      "subject": "Password reset request #5",
+      "description": "User account locked out, need password reset for user13@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 13",
+        "email": "user13@company.com",
+        "department": "Finance"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 95,
+        "resolution_time": 54,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-014",
+      "subject": "Password reset request #6",
+      "description": "User account locked out, need password reset for user14@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 14",
+        "email": "user14@company.com",
+        "department": "Finance"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 91,
+        "resolution_time": 41,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-015",
+      "subject": "Password reset request #7",
+      "description": "User account locked out, need password reset for user15@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 15",
+        "email": "user15@company.com",
+        "department": "HR"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 96,
+        "resolution_time": 39,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-016",
+      "subject": "Password reset request #8",
+      "description": "User account locked out, need password reset for user16@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 16",
+        "email": "user16@company.com",
+        "department": "IT"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 97,
+        "resolution_time": 44,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-017",
+      "subject": "Password reset request #9",
+      "description": "User account locked out, need password reset for user17@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 17",
+        "email": "user17@company.com",
+        "department": "Sales"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 91,
+        "resolution_time": 58,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-018",
+      "subject": "Password reset request #10",
+      "description": "User account locked out, need password reset for user18@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 18",
+        "email": "user18@company.com",
+        "department": "HR"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 90,
+        "resolution_time": 52,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-019",
+      "subject": "Password reset request #11",
+      "description": "User account locked out, need password reset for user19@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 19",
+        "email": "user19@company.com",
+        "department": "IT"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 90,
+        "resolution_time": 41,
+        "cost_saving": 22.5
+      }
+    },
+    {
+      "id": "TKT-DEMO-020",
+      "subject": "Password reset request #12",
+      "description": "User account locked out, need password reset for user20@company.com",
+      "priority": "Medium",
+      "status": "Open",
+      "contact": {
+        "name": "Test User 20",
+        "email": "user20@company.com",
+        "department": "IT"
+      },
+      "expected_resolution": {
+        "type": "password_reset",
+        "confidence": 90,
+        "resolution_time": 37,
+        "cost_saving": 22.5
+      }
+    }
+  ],
+  "statistics": {
+    "total_tickets": 20,
+    "high_confidence_tickets": 17,
+    "auto_resolvable": 19,
+    "total_potential_savings": 502.5,
+    "average_resolution_time": 71.21052631578948
+  },
+  "ai_models": {
+    "ollama": {
+      "status": "active",
+      "model": "llama2:7b",
+      "cost_per_request": 0.0,
+      "avg_response_time": 3.2
+    },
+    "openai": {
+      "status": "configured",
+      "model": "gpt-4",
+      "cost_per_request": 0.03,
+      "avg_response_time": 1.8
+    },
+    "claude": {
+      "status": "configured",
+      "model": "claude-3-sonnet",
+      "cost_per_request": 0.015,
+      "avg_response_time": 2.1
+    },
+    "gemini": {
+      "status": "configured",
+      "model": "gemini-pro",
+      "cost_per_request": 0.01,
+      "avg_response_time": 2.5
+    }
+  },
+  "system_config": {
+    "confidence_threshold": 85,
+    "auto_resolve_enabled": true,
+    "require_approval_above_risk": "medium",
+    "working_hours": {
+      "start": "09:00",
+      "end": "17:00",
+      "timezone": "EST"
+    },
+    "notification_settings": {
+      "email_notifications": true,
+      "slack_integration": false,
+      "webhook_enabled": true
+    }
+  },
+  "audit_log": [
+    {
+      "timestamp": "2024-09-16T10:30:00Z",
+      "ticket_id": "TKT-DEMO-001",
+      "action": "analyzed",
+      "confidence": 95,
+      "ai_model": "ollama",
+      "processing_time": 3.2
+    },
+    {
+      "timestamp": "2024-09-16T10:30:45Z",
+      "ticket_id": "TKT-DEMO-001",
+      "action": "resolved",
+      "method": "automatic",
+      "commands_executed": [
+        "Set-ADAccountPassword",
+        "Unlock-ADAccount"
+      ],
+      "resolution_time": 45
+    }
+  ]
+}

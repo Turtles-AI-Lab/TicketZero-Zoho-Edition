@@ -1,0 +1,40 @@
+{
+  "service": "DESK",
+  "locale": ["en"],
+  "whitelisted-domains": ["*.zohoapis.com", "localhost"],
+  "storage": {
+    "type": "entity",
+    "entity": "ticket"
+  },
+  "modules": {
+    "ticketDetailPage": {
+      "url": "/app/ticket-detail.html",
+      "icon": "icon.png"
+    },
+    "background": {
+      "url": "/app/background.html"
+    }
+  },
+  "logo": "logo.png",
+  "name": "TicketZero AI",
+  "description": "First AI system that actually FIXES tickets instead of just routing them. Uses local LLM + PowerShell automation to resolve 85% of IT tickets automatically.",
+  "version": "1.0.0",
+  "category": "Automation",
+  "developer": {
+    "name": "J&A Solutions",
+    "email": "jgreenia@jandraisolutions.com",
+    "website": "https://ticketzero.ai"
+  },
+  "permissions": {
+    "tickets": ["read", "write"],
+    "contacts": ["read"],
+    "departments": ["read"],
+    "agents": ["read"]
+  },
+  "webhooks": {
+    "ticket_created": {
+      "url": "/webhooks/ticket-created",
+      "events": ["ticket.created"]
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "password_reset_demo": {
+    "ticket_id": "TKT-DEMO-001",
+    "steps": [
+      "1. Open ticket TKT-DEMO-001 in Zoho Desk",
+      "2. Click 'TicketZero AI' widget in right sidebar",
+      "3. Click 'Analyze Ticket' button",
+      "4. Wait for AI analysis (3-5 seconds)",
+      "5. Review 95% confidence score for password reset",
+      "6. Click 'Resolve Automatically'",
+      "7. Watch automatic password reset execution",
+      "8. Verify ticket status changes to 'Resolved'",
+      "9. Check resolution comment added to ticket",
+      "10. Confirm customer notification email sent"
+    ],
+    "expected_outcome": {
+      "confidence": 95,
+      "resolution_time": "45 seconds",
+      "cost_saving": "$22.50",
+      "customer_satisfaction": "High"
+    }
+  },
+  "escalation_demo": {
+    "ticket_id": "TKT-DEMO-004",
+    "steps": [
+      "1. Open ticket TKT-DEMO-004 (server crash)",
+      "2. Click 'Analyze Ticket' in TicketZero AI widget",
+      "3. Wait for AI analysis completion",
+      "4. Note low confidence score (45%)",
+      "5. Observe 'Escalation Required' recommendation",
+      "6. Review detailed analysis provided",
+      "7. Verify ticket remains 'Open' status",
+      "8. Confirm escalation to human agent logged"
+    ],
+    "expected_outcome": {
+      "confidence": 45,
+      "action": "escalated",
+      "reason": "Complex hardware failure requires expert analysis",
+      "human_agent": "required"
+    }
+  },
+  "bulk_processing_demo": {
+    "ticket_ids": [
+      "TKT-DEMO-009",
+      "TKT-DEMO-010",
+      "TKT-DEMO-011",
+      "TKT-DEMO-012"
+    ],
+    "steps": [
+      "1. Navigate to ticket queue in Zoho Desk",
+      "2. Observe multiple password reset tickets",
+      "3. Enable 'Bulk Processing' in TicketZero AI",
+      "4. Watch background service process all tickets",
+      "5. Monitor progress in AI dashboard",
+      "6. Verify all tickets resolved automatically",
+      "7. Check batch processing time and efficiency"
+    ],
+    "expected_outcome": {
+      "tickets_processed": 4,
+      "total_time": "3.2 minutes",
+      "success_rate": "100%",
+      "cost_saving": "$90.00"
+    }
+  }
+}

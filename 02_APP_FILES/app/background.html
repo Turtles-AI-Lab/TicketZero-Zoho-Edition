@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TicketZero AI Background Service</title>
+</head>
+<body>
+    <script>
+        // Background service for TicketZero AI
+        // Handles webhook processing and automatic ticket monitoring
+        
+        console.log("TicketZero AI Background Service initialized");
+
+        // Listen for new tickets from webhook
+        ZOHODESK.extension.onload().then(function(app) {
+            
+            // Set up webhook listener for new tickets
+            app.on("ticket.created", function(data) {
+                console.log("New ticket detected:", data);
+                
+                // Check if auto-analysis is enabled
+                const autoAnalyze = localStorage.getItem('ticketzero_auto_analyze') === 'true';
+                
+                if (autoAnalyze) {
+                    analyzeNewTicket(data.ticket);
+                }
+            });
+
+            // Set up periodic monitoring for open tickets
+            setInterval(() => {
+                checkOpenTickets();
+            }, 300000); // Check every 5 minutes
+
+        });
+
+        async function analyzeNewTicket(ticket) {
+            try {
+                console.log("Auto-analyzing new ticket:", ticket.id);
+                
+                const response = await fetch('/api/analyze-ticket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ticket: {
+                            id: ticket.id,
+                            subject: ticket.subject,
+                            description: ticket.description,
+                            priority: ticket.priority,
+                            contact: ticket.contact
+                        },
+                        auto_mode: true
+                    })
+                });
+
+                const analysisResult = await response.json();
+                
+                if (analysisResult.success && analysisResult.data.confidence >= 85) {
+                    // High confidence - attempt automatic resolution
+                    const autoResolve = localStorage.getItem('ticketzero_auto_resolve') === 'true';
+                    
+                    if (autoResolve && !analysisResult.data.requires_human) {
+                        await executeAutomaticResolution(ticket.id, analysisResult.data);
+                    } else {
+                        // Add AI analysis note to ticket
+                        await addAnalysisNote(ticket.id, analysisResult.data);
+                    }
+                }
+                
+            } catch (error) {
+                console.error("Auto-analysis failed for ticket:", ticket.id, error);
+            }
+        }
+
+        async function executeAutomaticResolution(ticketId, analysis) {
+            try {
+                console.log("Attempting automatic resolution for ticket:", ticketId);
+                
+                const response = await fetch('/api/execute-resolution', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ticket_id: ticketId,
+                        analysis: analysis,
+                        auto_mode: true
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update ticket status to resolved
+                    ZOHODESK.extension.onload().then(function(app) {
+                        app.invoke("UPDATE", "ticket", {
+                            id: ticketId,
+                            status: "Closed",
+                            resolution: `✅ AUTOMATICALLY RESOLVED by TicketZero AI
+                            
+Issue Type: ${analysis.issue_type.replace('_', ' ').toUpperCase()}
+Confidence: ${analysis.confidence}%
+Resolution Time: ${result.execution_time} seconds
+Commands Executed: ${analysis.solution_commands.length}
+
+${result.resolution_note}
+
+Time Saved: ${analysis.time_to_resolve} minutes
+Cost Savings: $${(analysis.time_to_resolve * 1.5).toFixed(2)}
+
+This ticket was resolved automatically using local LLM intelligence and PowerShell automation. No human intervention was required.`
+                        });
+                    });
+                    
+                    console.log("Ticket", ticketId, "resolved automatically");
+                    
+                    // Log success for reporting
+                    logResolutionSuccess(ticketId, analysis, result);
+                    
+                } else {
+                    console.error("Automatic resolution failed:", result.error);
+                    await addAnalysisNote(ticketId, analysis, "Automatic resolution failed: " + result.error);
+                }
+
+            } catch (error) {
+                console.error("Automatic resolution error:", error);
+                await addAnalysisNote(ticketId, analysis, "Automatic resolution error: " + error.message);
+            }
+        }
+
+        async function addAnalysisNote(ticketId, analysis, errorMessage = null) {
+            try {
+                ZOHODESK.extension.onload().then(function(app) {
+                    const note = errorMessage ? 
+                        `🤖 TicketZero AI Analysis (FAILED)
+                        
+${errorMessage}
+
+Issue Type: ${analysis.issue_type.replace('_', ' ').toUpperCase()}
+Confidence: ${analysis.confidence}%
+Suggested Commands: ${analysis.solution_commands.join('; ')}
+
+Manual review recommended.` :
+                        `🤖 TicketZero AI Analysis
+                        
+Issue Type: ${analysis.issue_type.replace('_', ' ').toUpperCase()}
+Confidence: ${analysis.confidence}%
+Root Cause: ${analysis.root_cause}
+Expected Resolution Time: ${analysis.time_to_resolve} minutes
+
+Suggested Solution:
+${analysis.solution_commands.join('\n')}
+
+${analysis.confidence >= 70 ? '✅ Ready for automated execution' : '⚠️ Requires human review'}`;
+
+                    app.invoke("CREATE", "ticket.thread", {
+                        ticketId: ticketId,
+                        isPublic: false,
+                        content: note
+                    });
+                });
+                
+            } catch (error) {
+                console.error("Failed to add analysis note:", error);
+            }
+        }
+
+        async function checkOpenTickets() {
+            try {
+                // Get open tickets that haven't been analyzed yet
+                ZOHODESK.extension.onload().then(function(app) {
+                    app.invoke("GET", "tickets", {
+                        status: "Open",
+                        limit: 50
+                    }).then(function(response) {
+                        if (response.data && response.data.length > 0) {
+                            response.data.forEach(ticket => {
+                                // Check if ticket has been analyzed by looking for our AI note
+                                if (!hasAIAnalysis(ticket)) {
+                                    analyzeNewTicket(ticket);
+                                }
+                            });
+                        }
+                    });
+                });
+                
+            } catch (error) {
+                console.error("Error checking open tickets:", error);
+            }
+        }
+
+        function hasAIAnalysis(ticket) {
+            // Check if ticket already has AI analysis
+            return ticket.thread && ticket.thread.some(thread => 
+                thread.content && thread.content.includes('TicketZero AI Analysis')
+            );
+        }
+
+        function logResolutionSuccess(ticketId, analysis, result) {
+            // Log successful resolution for analytics
+            const logData = {
+                timestamp: new Date().toISOString(),
+                ticket_id: ticketId,
+                issue_type: analysis.issue_type,
+                confidence: analysis.confidence,
+                time_to_resolve: analysis.time_to_resolve,
+                execution_time: result.execution_time,
+                commands_executed: analysis.solution_commands.length,
+                cost_savings: analysis.time_to_resolve * 1.5
+            };
+            
+            // Store in local storage for dashboard
+            const existingLogs = JSON.parse(localStorage.getItem('ticketzero_resolutions') || '[]');
+            existingLogs.push(logData);
+            
+            // Keep only last 1000 entries
+            if (existingLogs.length > 1000) {
+                existingLogs.splice(0, existingLogs.length - 1000);
+            }
+            
+            localStorage.setItem('ticketzero_resolutions', JSON.stringify(existingLogs));
+            
+            console.log("Resolution logged:", logData);
+        }
+
+        // Configuration management
+        function getConfig() {
+            return {
+                auto_analyze: localStorage.getItem('ticketzero_auto_analyze') === 'true',
+                auto_resolve: localStorage.getItem('ticketzero_auto_resolve') === 'true',
+                min_confidence: parseInt(localStorage.getItem('ticketzero_min_confidence') || '70'),
+                ollama_host: localStorage.getItem('ticketzero_ollama_host') || 'http://localhost:11434',
+                model: localStorage.getItem('ticketzero_model') || 'llama2'
+            };
+        }
+
+        function updateConfig(config) {
+            Object.keys(config).forEach(key => {
+                localStorage.setItem('ticketzero_' + key, config[key]);
+            });
+        }
+
+        // Expose functions for configuration panel
+        window.TicketZeroConfig = {
+            get: getConfig,
+            update: updateConfig
+        };
+
+    </script>
+</body>
+</html>

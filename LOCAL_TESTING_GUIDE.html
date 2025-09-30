@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TicketZero AI - Local Testing Guide</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        h1 { color: #007BFF; border-bottom: 2px solid #007BFF; padding-bottom: 10px; }
+        h2 { color: #0056b3; margin-top: 30px; }
+        .step { background: #f8f9fa; padding: 15px; margin: 15px 0; border-left: 4px solid #007BFF; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+        pre { background: #2d2d2d; color: #fff; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .warning { background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0; }
+        .success { background: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>TicketZero AI - Local Testing Guide</h1>
+
+    <h2>Quick Start (5 Minutes)</h2>
+
+    <div class="step">
+        <h3>Step 1: Access Zoho Desk Developer Space</h3>
+        <ol>
+            <li>Login to your Zoho Desk instance</li>
+            <li>Navigate to <strong>Setup → Developer Space → Widgets</strong></li>
+            <li>Click <strong>"Create New Widget"</strong></li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h3>Step 2: Upload Widget Files</h3>
+        <ol>
+            <li>Widget Name: <code>TicketZero AI</code></li>
+            <li>Upload <code>plugin-manifest.json</code> from <code>02_APP_FILES/</code></li>
+            <li>Upload widget files:
+                <ul>
+                    <li><code>app/ticket-detail.html</code> - Main widget UI</li>
+                    <li><code>app/background.html</code> - Background service</li>
+                    <li><code>icon.png</code> - Widget icon</li>
+                </ul>
+            </li>
+            <li>Set widget location: <strong>Ticket Detail Page - Right Sidebar</strong></li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h3>Step 3: Configure API Endpoints</h3>
+        <p>For local testing, configure these endpoints:</p>
+        <pre>
+{
+    "api_base": "http://localhost:5000",
+    "endpoints": {
+        "analyze": "/api/analyze",
+        "resolve": "/api/resolve",
+        "statistics": "/api/statistics"
+    }
+}
+        </pre>
+    </div>
+
+    <div class="step">
+        <h3>Step 4: Run Local API Server (Optional)</h3>
+        <p>To test with full functionality:</p>
+        <pre>
+cd 02_APP_FILES/api
+python -m pip install flask flask-cors
+python zoho_integration.py
+        </pre>
+        <p>Server will run on <code>http://localhost:5000</code></p>
+    </div>
+
+    <h2>Testing Without Backend</h2>
+    <p>The widget includes mock data for UI testing without a backend:</p>
+    <ul>
+        <li>Open any ticket in Zoho Desk</li>
+        <li>Widget will display in right sidebar</li>
+        <li>Click "Analyze" to see mock AI analysis</li>
+        <li>Review suggested resolutions</li>
+    </ul>
+
+    <h2>Test Scenarios</h2>
+
+    <div class="success">
+        <h3>Test Case 1: Password Reset</h3>
+        <p><strong>Create ticket with subject:</strong> "Cannot login - password not working"</p>
+        <p><strong>Expected result:</strong> Widget shows 95% confidence for password reset</p>
+    </div>
+
+    <div class="success">
+        <h3>Test Case 2: Disk Space</h3>
+        <p><strong>Create ticket with subject:</strong> "Computer says disk is full"</p>
+        <p><strong>Expected result:</strong> Widget suggests disk cleanup with 88% confidence</p>
+    </div>
+
+    <div class="success">
+        <h3>Test Case 3: Complex Issue</h3>
+        <p><strong>Create ticket with subject:</strong> "Multiple system errors after update"</p>
+        <p><strong>Expected result:</strong> Widget suggests escalation to human agent</p>
+    </div>
+
+    <h2>Sample Test Data</h2>
+    <p>Use the test tickets from <code>03_TEST_ENVIRONMENT/demo_database.json</code>:</p>
+    <pre>
+{
+    "tickets": [
+        {
+            "id": "TKT-001",
+            "subject": "Password reset request",
+            "description": "I forgot my password and cannot login",
+            "expected_action": "password_reset",
+            "confidence": 95
+        },
+        {
+            "id": "TKT-002",
+            "subject": "Disk full error",
+            "description": "Getting disk space warnings",
+            "expected_action": "disk_cleanup",
+            "confidence": 88
+        }
+    ]
+}
+    </pre>
+
+    <h2>Troubleshooting</h2>
+
+    <div class="warning">
+        <h3>Widget Not Appearing?</h3>
+        <ul>
+            <li>Check widget is enabled in Developer Space</li>
+            <li>Verify user has permission to view widgets</li>
+            <li>Clear browser cache and reload</li>
+        </ul>
+    </div>
+
+    <div class="warning">
+        <h3>API Connection Failed?</h3>
+        <ul>
+            <li>Widget works in demo mode without backend</li>
+            <li>For full functionality, ensure local server is running</li>
+            <li>Check browser console for error messages</li>
+        </ul>
+    </div>
+
+    <h2>Contact Support</h2>
+    <p>Need help with testing? Contact us:</p>
+    <ul>
+        <li><strong>Email:</strong> jgreenia@jandraisolutions.com</li>
+        <li><strong>Response Time:</strong> 2-4 hours during business hours</li>
+        <li><strong>Live Demo Available:</strong> Schedule via email</li>
+    </ul>
+
+    <div class="success">
+        <h3>Ready to Test!</h3>
+        <p>The widget is designed to work immediately after installation. Even without a backend server, you can explore the UI and see how it integrates with Zoho Desk.</p>
+    </div>
+</body>
+</html>

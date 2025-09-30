@@ -1,0 +1,76 @@
+TICKETZERO AI - ZOHO MARKETPLACE SUBMISSION PACKAGE
+====================================================
+
+PACKAGE CONTENTS:
+-----------------
+
+1. DOCUMENTATION FILES:
+   - IMPORTANT_READ_FIRST.txt         - Start here - overview and component explanation
+   - RESPONSE_TO_A_SURYA.html         - Direct answers to reviewer questions
+   - COMPONENT_USAGE_MAPPING.html     - Detailed breakdown of what each component does
+   - TECHNICAL_ARCHITECTURE.html      - Full technical documentation
+   - LOCAL_TESTING_GUIDE.html         - Instructions for testing
+
+2. APPLICATION FILES (02_APP_FILES/):
+
+   Widget UI (app/):
+   - ticket-detail.html                - Main widget interface
+   - background.html                   - Background service
+   - settings-dashboard.html           - Configuration UI
+   - setup-wizard.html                 - Initial setup wizard
+
+   API Integration (api/):
+   - zoho_integration.py               - Main Zoho Desk integration
+   - enhanced_zoho_integration.py      - Advanced features
+   - microsoft_graph_integration.py    - Azure AD/M365 operations
+   - zoho_assist_integration.py        - Remote machine access
+
+   Core Modules (api/core/):
+   - integrated_engine.py              - AI engine
+   - tier1_ticket_classifier.py       - Ticket classification
+   - multi_llm_engine.py               - LLM management
+   - cost_tracker.py                  - ROI tracking
+   - zoho_ticket_tracker.py           - Ticket lifecycle management
+
+   Configuration:
+   - plugin-manifest.json              - Zoho Desk widget configuration
+   - icon.png                          - Widget icon (48x48)
+   - logo.png                          - App logo (200x60)
+
+3. TEST ENVIRONMENT (03_TEST_ENVIRONMENT/):
+   - demo_database.json                - Sample tickets for testing
+   - test_scenarios.json               - Test cases
+   - analytics_data.json               - Sample metrics
+   - security_tests.json               - Security validation tests
+
+INTEGRATION OVERVIEW:
+---------------------
+
+This package integrates THREE key technologies:
+
+1. ZOHO DESK (Primary)
+   - Hosts the widget in ticket detail page
+   - Manages ticket workflow
+
+2. ZOHO ASSIST (Secondary)
+   - Provides remote machine access
+   - Executes local operations (disk cleanup, service restarts)
+
+3. MICROSOFT GRAPH API (External)
+   - Manages Azure AD operations
+   - Handles password resets, account unlocks, licenses
+
+4. LOCAL LLM (AI Engine)
+   - Analyzes tickets
+   - Classifies issues
+   - Routes to appropriate API
+
+WORKFLOW:
+---------
+
+Ticket Created → LLM Analyzes → Routes to API → Executes Fix → Updates Ticket
+
+CONTACT:
+--------
+J&A Solutions
+Email: jgreenia@jandraisolutions.com
