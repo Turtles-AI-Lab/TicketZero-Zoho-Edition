@@ -5,7 +5,7 @@ All notable changes to TicketZero AI - Zoho Edition will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2025-01-30
+## [1.1.0] - 2025-09-30
 
 ### Added
 - **3-Day Trial License System** - Free trial for evaluation
@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added trial requirements (cryptography package)
 - Widget integration examples for trial status display
 
-## [1.0.0] - 2025-01-30
+## [1.0.0] - 2025-09-30
 
 ### Added
 - Initial portfolio release of TicketZero AI - Zoho Desk Edition
