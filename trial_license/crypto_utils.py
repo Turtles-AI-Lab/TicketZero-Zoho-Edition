@@ -68,7 +68,8 @@ class TrialCrypto:
     @staticmethod
     def obfuscate_filename(base_name, machine_id):
         """Generate obfuscated filename based on machine ID"""
-        name_hash = hashlib.md5(f"{base_name}{machine_id}".encode()).hexdigest()[:12]
+        # Using SHA-256 instead of deprecated MD5
+        name_hash = hashlib.sha256(f"{base_name}{machine_id}".encode()).hexdigest()[:12]
         return f".{name_hash}.dat"
 
 

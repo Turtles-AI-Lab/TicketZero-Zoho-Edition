@@ -23,7 +23,7 @@ class HardwareFingerprint:
         # CPU info
         try:
             if platform.system() == "Windows":
-                cpu = subprocess.check_output("wmic cpu get ProcessorId", shell=True).decode()
+                cpu = subprocess.check_output(["wmic", "cpu", "get", "ProcessorId"]).decode()
                 components.append(cpu.strip().split('\n')[1] if len(cpu.strip().split('\n')) > 1 else "")
             elif platform.system() == "Linux":
                 with open('/proc/cpuinfo', 'r') as f:
@@ -32,51 +32,55 @@ class HardwareFingerprint:
                             components.append(line.split(':')[1].strip())
                             break
             elif platform.system() == "Darwin":  # macOS
-                cpu = subprocess.check_output("sysctl -n machdep.cpu.brand_string", shell=True).decode()
+                cpu = subprocess.check_output(["sysctl", "-n", "machdep.cpu.brand_string"]).decode()
                 components.append(cpu.strip())
-        except:
+        except Exception:
             pass
 
         # Disk serial
         try:
             if platform.system() == "Windows":
-                disk = subprocess.check_output("wmic diskdrive get SerialNumber", shell=True).decode()
+                disk = subprocess.check_output(["wmic", "diskdrive", "get", "SerialNumber"]).decode()
                 components.append(disk.strip().split('\n')[1] if len(disk.strip().split('\n')) > 1 else "")
             elif platform.system() == "Linux":
-                disk = subprocess.check_output("lsblk -o SERIAL -n", shell=True).decode()
+                disk = subprocess.check_output(["lsblk", "-o", "SERIAL", "-n"]).decode()
                 components.append(disk.strip().split('\n')[0])
             elif platform.system() == "Darwin":
-                disk = subprocess.check_output("system_profiler SPSerialATADataType | grep 'Serial Number'", shell=True).decode()
-                components.append(disk.strip())
-        except:
+                # macOS command requires shell for pipe, use safer approach
+                result = subprocess.check_output(["system_profiler", "SPSerialATADataType"]).decode()
+                for line in result.split('\n'):
+                    if 'Serial Number' in line:
+                        components.append(line.split(':')[-1].strip())
+                        break
+        except Exception:
             pass
 
         # MAC address
         try:
             if platform.system() == "Windows":
-                mac = subprocess.check_output("getmac", shell=True).decode()
+                mac = subprocess.check_output(["getmac"]).decode()
                 components.append(mac.strip().split('\n')[3] if len(mac.strip().split('\n')) > 3 else "")
             else:
                 import uuid
                 components.append(':'.join(['{:02x}'.format((uuid.getnode() >> elements) & 0xff)
                                            for elements in range(0,2*6,2)][::-1]))
-        except:
+        except Exception:
             pass
 
         # System UUID (Windows)
         try:
             if platform.system() == "Windows":
-                uuid_str = subprocess.check_output("wmic csproduct get UUID", shell=True).decode()
+                uuid_str = subprocess.check_output(["wmic", "csproduct", "get", "UUID"]).decode()
                 components.append(uuid_str.strip().split('\n')[1] if len(uuid_str.strip().split('\n')) > 1 else "")
-        except:
+        except Exception:
             pass
 
         # Motherboard serial
         try:
             if platform.system() == "Windows":
-                mb = subprocess.check_output("wmic baseboard get SerialNumber", shell=True).decode()
+                mb = subprocess.check_output(["wmic", "baseboard", "get", "SerialNumber"]).decode()
                 components.append(mb.strip().split('\n')[1] if len(mb.strip().split('\n')) > 1 else "")
-        except:
+        except Exception:
             pass
 
         # Username + hostname as fallback

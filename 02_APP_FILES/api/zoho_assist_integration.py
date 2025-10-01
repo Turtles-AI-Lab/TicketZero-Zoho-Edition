@@ -356,8 +356,9 @@ class ZohoAssistClient:
             return None
 
 
-# Example configuration
+# WARNING: DO NOT hardcode credentials here!
+# Use environment variables or secure configuration management
 ZOHO_ASSIST_CONFIG = {
-    "auth_token": "your-zoho-assist-token",
-    "organization_id": "your-org-id"
+    "auth_token": os.getenv("ZOHO_ASSIST_TOKEN"),
+    "organization_id": os.getenv("ZOHO_ASSIST_ORG_ID")
 }

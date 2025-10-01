@@ -289,9 +289,10 @@ class MicrosoftGraphClient:
             return False
 
 
-# Example usage configuration
+# WARNING: DO NOT hardcode credentials here!
+# Use environment variables or secure configuration management
 GRAPH_CONFIG = {
-    "tenant_id": "your-tenant-id",
-    "client_id": "your-app-id",
-    "client_secret": "your-app-secret"
+    "tenant_id": os.getenv("AZURE_TENANT_ID"),
+    "client_id": os.getenv("AZURE_CLIENT_ID"),
+    "client_secret": os.getenv("AZURE_CLIENT_SECRET")
 }
