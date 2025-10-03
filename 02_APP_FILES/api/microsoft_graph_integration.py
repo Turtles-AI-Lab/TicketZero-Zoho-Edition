@@ -6,6 +6,7 @@ Handles Azure AD and Microsoft 365 operations
 import requests
 import json
 import logging
+import os
 from datetime import datetime, timedelta
 from typing import Dict, Optional, List
 
@@ -100,9 +101,9 @@ class MicrosoftGraphClient:
         user_id = user['id']
 
         # Generate temporary password
-        import random
+        import secrets
         import string
-        temp_password = ''.join(random.choices(string.ascii_letters + string.digits + '!@#$', k=16))
+        temp_password = ''.join(secrets.choice(string.ascii_letters + string.digits + '!@#$') for _ in range(16))
 
         # Reset password
         endpoint = f"/users/{user_id}/authentication/passwordMethods/28c10230-6103-485e-b985-444c60001490/resetPassword"

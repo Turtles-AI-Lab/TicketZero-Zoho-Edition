@@ -133,6 +133,16 @@ ZOHO_SUBMISSION_PACKAGE/
 - 📝 **Detailed Logging** - Complete audit trail of all actions
 - ⚡ **Real-time Updates** - Instant ticket status changes and notifications
 
+## Security & Configuration
+
+⚠️ **Important Security Notes:**
+- All API credentials must be stored in environment variables
+- Never commit `.env` files or hardcoded credentials to version control
+- Review `trial_license/crypto_utils.py` and update the encryption salt before deployment
+- Debug mode is disabled by default in production
+
+See `.env.example` for required environment variables.
+
 ## Documentation
 
 Detailed documentation files included:
